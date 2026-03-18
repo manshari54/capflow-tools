@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,7 +50,7 @@ body{background:var(--off);color:var(--text);font-family:"Inter",system-ui,sans-
 .divider{border:none;border-top:1px solid var(--border);margin:18px 0}
 .ucard{background:var(--navy-light);border:2px dashed var(--border2);border-radius:var(--rl);padding:26px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;position:relative;margin-bottom:12px}
 .ucard:hover,.ucard.drag{border-color:var(--orange);background:var(--orange-light)}
-.ucard input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.ucard input{display:none}
 .ucard h3{font-family:"Nunito",sans-serif;font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px}
 .ucard p{font-size:12px;color:var(--text3)}
 .pills{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
@@ -219,9 +220,10 @@ body.printing #RS{display:block!important}
   <div class="card">
     <div class="slbl">Bank statement / illion report files</div>
     <div class="ucard" id="dz">
-      <input type="file" id="fi" multiple accept=".html,.htm,.txt,.csv,.pdf"/>
-      <h3>Drop files here or click to browse</h3>
-      <p>BankStatements.com.au HTML exports · Multiple files supported</p>
+      <h3>Drop files here</h3>
+      <p style="margin-bottom:14px">BankStatements.com.au HTML exports · Multiple files supported</p>
+      <label for="fi" style="display:inline-block;padding:9px 22px;background:var(--orange);color:white;border-radius:var(--r);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s">Browse files</label>
+      <input type="file" id="fi" multiple accept=".html,.htm,.txt,.csv,.pdf" style="display:none"/>
     </div>
     <div class="pills" id="pills"></div>
     <button class="btn-run" id="runBtn" disabled>Generate Merchant Review</button>
