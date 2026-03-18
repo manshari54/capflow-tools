@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capflow — Merchant Review</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#2d3280;--navy2:#232870;--navy3:#1a1f5a;
+  --navy-light:#eef0fb;--navy-mid:rgba(45,50,128,0.1);
+  --orange:#f47920;--orange2:#e06a10;
+  --orange-light:#fff4ec;--orange-mid:rgba(244,121,32,0.15);
+  --white:#ffffff;--off:#f7f8fc;
+  --border:#e2e5f0;--border2:#cdd1e8;
+  --text:#1a1f4a;--text2:#5a6080;--text3:#9098b8;
+  --green:#1a9e6a;--green-bg:#edfaf4;--green-border:#a8e8ce;
+  --red:#d94040;--red-bg:#fef0f0;--red-border:#f5b8b8;
+  --amber:#c07820;--amber-bg:#fff8ec;--amber-border:#f0d090;
+  --r:8px;--rl:14px;
+  --shadow:0 2px 12px rgba(45,50,128,0.08);
+  --shadow-lg:0 8px 32px rgba(45,50,128,0.12);
+}
+html{font-size:15px}
+body{background:var(--off);color:var(--text);font-family:"Inter",system-ui,sans-serif;font-weight:300;line-height:1.6;min-height:100vh}
+.stripe{height:4px;background:linear-gradient(90deg,var(--orange),#ffaa50,var(--orange))}
+.hdr{background:var(--navy3);padding:0;box-shadow:0 2px 16px rgba(26,31,90,0.25)}
+.hdr-inner{max-width:900px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo-img{height:30px;width:auto}
+.hdr-right{display:flex;align-items:center;gap:12px}
+.hdr-badge{font-family:"Nunito",sans-serif;font-size:10px;font-weight:700;padding:4px 12px;background:rgba(244,121,32,0.2);border:1px solid rgba(244,121,32,0.4);border-radius:20px;color:#f8a060;letter-spacing:.8px;text-transform:uppercase}
+.page{max-width:900px;margin:0 auto;padding:24px 24px 40px}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--rl);padding:24px;margin-bottom:20px;box-shadow:var(--shadow)}
+.slbl{font-family:"Nunito",sans-serif;font-size:9px;font-weight:800;letter-spacing:1.8px;color:var(--navy);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.slbl::before{content:"";display:block;width:3px;height:14px;background:var(--orange);border-radius:2px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+@media(max-width:560px){.fgrid{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.3px;text-transform:uppercase}
+.field input,.field select,.field textarea{background:var(--off);border:1.5px solid var(--border);border-radius:var(--r);padding:9px 13px;color:var(--text);font-family:"Inter",sans-serif;font-size:13px;font-weight:400;outline:none;transition:border-color .15s,box-shadow .15s;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--orange-mid)}
+.field input::placeholder,.field textarea::placeholder{color:var(--text3)}
+.field select option{background:white}
+.field textarea{resize:vertical;min-height:60px}
+.awrap{position:relative}
+.awrap .cur{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;pointer-events:none;font-family:"Nunito",monospace;font-weight:700}
+.awrap input{padding-left:24px}
+.divider{border:none;border-top:1px solid var(--border);margin:18px 0}
+.ucard{background:var(--navy-light);border:2px dashed var(--border2);border-radius:var(--rl);padding:26px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;position:relative;margin-bottom:12px}
+.ucard:hover,.ucard.drag{border-color:var(--orange);background:var(--orange-light)}
+.ucard input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.ucard h3{font-family:"Nunito",sans-serif;font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.ucard p{font-size:12px;color:var(--text3)}
+.pills{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.pill{display:flex;align-items:center;gap:10px;background:var(--navy-light);border:1px solid var(--border2);border-radius:var(--r);padding:7px 12px;font-size:12px}
+.pill-icon{width:26px;height:26px;background:var(--orange);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:white;font-family:"Nunito",sans-serif;flex-shrink:0}
+.pname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;color:var(--text)}
+.psz{color:var(--text3);font-size:10px;font-family:monospace}
+.prm{background:none;border:none;cursor:pointer;color:var(--text3);font-size:17px;line-height:1;padding:0;transition:color .15s}
+.prm:hover{color:var(--red)}
+.btn-run{width:100%;padding:13px;background:var(--orange);color:white;border:none;border-radius:var(--r);font-family:"Nunito",sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:background .15s,transform .1s;box-shadow:0 4px 16px rgba(244,121,32,0.35);letter-spacing:.2px}
+.btn-run:hover{background:var(--orange2);transform:translateY(-1px)}
+.btn-run:active{transform:translateY(0)}
+.btn-run:disabled{opacity:.3;cursor:not-allowed;transform:none;box-shadow:none}
+.sbar{display:none;align-items:center;gap:12px;margin-top:14px;padding:12px 16px;background:var(--navy-light);border:1px solid var(--border2);border-radius:var(--r);font-size:13px;color:var(--navy);font-weight:500}
+.spin{width:16px;height:16px;border:2.5px solid var(--navy);border-top-color:var(--orange);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ebar{display:none;margin-top:12px;padding:12px 16px;background:var(--red-bg);border:1px solid var(--red-border);border-radius:var(--r);font-size:13px;color:var(--red);font-weight:500}
+
+/* ── REPORT ── */
+#RS{display:none}
+.report-hdr{background:var(--navy3);border-radius:var(--rl);padding:20px 26px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;box-shadow:var(--shadow-lg)}
+.report-hdr-left{}
+.report-entity{font-family:"Nunito",sans-serif;font-size:22px;font-weight:800;color:white;margin-bottom:2px}
+.report-sub{font-size:11px;color:rgba(255,255,255,0.45);font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.report-meta{text-align:right}
+.report-date{font-size:11px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}
+.report-requested{font-family:"Nunito",sans-serif;font-size:20px;font-weight:800;color:var(--orange)}
+.report-req-lbl{font-size:9px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.8px}
+
+/* STAT ROW */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+@media(max-width:600px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow);border-top:3px solid var(--border)}
+.stat.positive{border-top-color:var(--green)}
+.stat.negative{border-top-color:var(--red)}
+.stat.warning{border-top-color:var(--amber)}
+.stat.neutral{border-top-color:var(--navy)}
+.stat-lbl{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.stat-val{font-family:"Nunito",sans-serif;font-size:16px;font-weight:800;color:var(--text)}
+.stat-val.positive{color:var(--green)}
+.stat-val.negative{color:var(--red)}
+.stat-val.warning{color:var(--amber)}
+.stat-val.neutral{color:var(--navy)}
+
+/* TWO COL LAYOUT */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+@media(max-width:640px){.two-col{grid-template-columns:1fr}}
+
+/* SECTION CARD */
+.section-card{background:var(--white);border:1px solid var(--border);border-radius:var(--rl);padding:18px 20px;box-shadow:var(--shadow)}
+.section-title{font-family:"Nunito",sans-serif;font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--navy);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-title::before{content:"";display:block;width:3px;height:12px;background:var(--orange);border-radius:2px}
+
+/* DEPOSIT TABLE */
+.dtbl{width:100%;border-collapse:collapse}
+.dtbl thead th{font-family:"Nunito",sans-serif;font-size:9px;font-weight:800;color:var(--text3);text-transform:uppercase;text-align:left;padding:0 8px 8px 0;border-bottom:2px solid var(--border);letter-spacing:.5px}
+.dtbl thead th:nth-child(2){text-align:right}
+.dtbl thead th:nth-child(3){text-align:right}
+.dtbl tbody tr{border-bottom:1px solid var(--border)}
+.dtbl tbody tr:last-child{border-bottom:none}
+.dtbl td{padding:7px 8px 7px 0;font-size:12px;color:var(--text2)}
+.dtbl tbody td:first-child{color:var(--text);font-weight:500}
+.dtbl tbody td:nth-child(2){text-align:right;color:var(--navy);font-weight:700;font-family:"Nunito",sans-serif;font-size:13px}
+.dtbl tbody td:nth-child(3){text-align:right}
+.dtbl tfoot td{padding:9px 8px 2px 0;font-family:"Nunito",sans-serif;font-size:13px;font-weight:800;border-top:2px solid var(--border2);color:var(--navy)}
+.dtbl tfoot td:nth-child(2){text-align:right;color:var(--orange)}
+.bwrap{display:flex;align-items:center;gap:6px}
+.bbg{flex:1;height:3px;background:var(--border);border-radius:2px;min-width:24px}
+.bfill{height:3px;background:linear-gradient(90deg,var(--navy),var(--orange));border-radius:2px}
+
+/* FACT LIST */
+.fact-list{display:flex;flex-direction:column;gap:0}
+.fact-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);gap:12px}
+.fact-item:last-child{border-bottom:none}
+.fact-lbl{font-size:12px;color:var(--text2);flex-shrink:0}
+.fact-val{font-size:13px;font-weight:600;color:var(--text);text-align:right;font-family:"Nunito",sans-serif}
+.fact-val.good{color:var(--green)}
+.fact-val.bad{color:var(--red)}
+.fact-val.warn{color:var(--amber)}
+
+/* OBSERVATIONS */
+.obs-list{display:flex;flex-direction:column;gap:6px}
+.obs{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border-radius:var(--r);font-size:12px;line-height:1.55;border:1px solid}
+.obs.positive{background:var(--green-bg);border-color:var(--green-border);color:#147a50}
+.obs.negative{background:var(--red-bg);border-color:var(--red-border);color:#b03030}
+.obs.neutral{background:var(--navy-light);border-color:var(--border2);color:var(--navy)}
+.obs.warning{background:var(--amber-bg);border-color:var(--amber-border);color:#9a6010}
+.obs-dot{width:6px;height:6px;border-radius:50%;background:currentColor;margin-top:4px;flex-shrink:0}
+
+/* CREDIT BEHAVIOUR */
+.credit-item{padding:8px 0;border-bottom:1px solid var(--border)}
+.credit-item:last-child{border-bottom:none}
+.credit-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px}
+.credit-detail{font-size:11px;color:var(--text2)}
+.credit-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;text-transform:uppercase;letter-spacing:.5px;font-family:"Nunito",sans-serif}
+.credit-badge.ok{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.credit-badge.flag{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.credit-badge.note{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+
+/* REPORT FOOTER BUTTONS */
+.rfooter{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;padding-bottom:30px}
+.btn-print{flex:1;min-width:140px;padding:11px;background:var(--navy3);border:none;border-radius:var(--r);color:white;font-family:"Nunito",sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s;box-shadow:0 4px 12px rgba(26,31,90,0.2)}
+.btn-print:hover{background:var(--navy2)}
+.btn-download{flex:1;min-width:140px;padding:11px;background:var(--navy3);border:none;border-radius:var(--r);color:white;font-family:"Nunito",sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s;box-shadow:0 4px 12px rgba(26,31,90,0.2)}
+.btn-download:hover{background:var(--navy2)}
+.btn-download:disabled{opacity:.5;cursor:not-allowed}
+.btn-new{flex:1;min-width:140px;padding:11px;background:var(--orange);border:none;border-radius:var(--r);color:white;font-family:"Nunito",sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:background .15s;box-shadow:0 4px 12px rgba(244,121,32,0.3)}
+.btn-new:hover{background:var(--orange2)}
+
+@media print{ .print-top-bar{display:flex!important;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:3px solid var(--orange);margin-bottom:14px;-webkit-print-color-adjust:exact;print-color-adjust:exact} 
+  .stripe,.hdr,.rfooter,#FS{display:none!important}
+  #RS{display:block!important}
+  body{background:white!important;padding:0!important}
+  .page{padding:8px 16px!important;max-width:100%!important}
+  .card,.section-card,.stat,.report-hdr,.two-col,.obs-list,.fact-list,.credit-item{box-shadow:none!important}
+  .report-hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact;background:var(--navy3)!important}
+  .deal-box,.cbar{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .stat.positive,.stat.negative,.stat.warning,.stat.neutral{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .obs{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .credit-badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .bfill{-webkit-print-color-adjust:exact;print-color-adjust:exact;background:linear-gradient(90deg,var(--navy),var(--orange))!important}
+  @page{margin:10mm;size:A4}
+  .two-col{page-break-inside:avoid}
+  .section-card{page-break-inside:avoid}
+}
+body.printing #FS{display:none!important}
+body.printing #RS{display:block!important}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<div class="stripe"></div>
+<header class="hdr">
+  <div class="hdr-inner">
+    <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCACmAnYDASIAAhEBAxEB/8QAHQABAAIDAQEBAQAAAAAAAAAAAAYHBQgJBAMCAf/EAFYQAAEDAwEEBgQFEAUJCQEAAAEAAgMEBREGBxIhMQgTIkFRYRQycYE1N5GhshUWFyNCUlZicnN0dbGzwdFVgpKT0hgkMzQ2lJXT4SZDVGNloqSl4vD/xAAcAQEAAQUBAQAAAAAAAAAAAAAAAwIEBQYHAQj/xAA7EQACAQMCAwYEAwYFBQAAAAAAAQIDBBEFIRIxQQYTUXGBkSJhscEyM6EHFdHh8PEUI2JyshY0NUKC/9oADAMBAAIRAxEAPwCkkRFuBahERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREARZHTlju+o7tFarHb56+tl9WKFuTgcye4Ad5PALZ/Zr0ZbVQ9VXa4rvqnUDDvQaVxZA0+Dn8HP926PaoK9zTor4mVKLZqvQUVZX1LaagpJ6qd3qxQxl7j7AOKmlr2O7TriwOp9G3JgJA/zgNgPHykLf+i3ssVks1ho/Q7JaqK20+cmOlgbE0nxIaBk+ZWQWMnqsv8A1iSKmaIVWwnavTxGWTSMrmjujrKeQ/I2QlRq/wCg9aWCN0t40td6OFoy6Z9K/qhwJ9cDd5Ann3LoTd7nbrRQSXC611NQ0kQy+aeQMY33lU9qvpKaGtkno9ip7hqCoJAaYYzDETnBG88b2fDDSD4qqjfXFR7QyeOCXU0zRbFX2x6020H0+37K7Dp2nqn7/wBVqt74p3HHBxc3ddICO8xuHLwUR2lbAtY6OtLbtC+G+UbWA1Joo3mSA4y5xZjiwY9Ye0gK/jdQbUZPD8MlDiyo0RFclIREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBSHZ7o+8651PBYLJCHzyDflkfwZBGCA6R57mjI9pIA4kLAwxyTSshhjdJI9waxjRkuJ4AAd5W9XR72b0+gNHRmpiife69olrZwwhzQeLYhkZAb3jhxz5K1u7lUIZ6vkVxjlmc2YbO9ObP7Myjs9JG6sdG1tXXOb9tqHDmSeOG54ho4D51L0Ra3KUpvMnuT8j8VE0NNTyVFRLHDDEwvkkkcGtY0DJJJ4AAd61w2t9JSGklktWz+KKqe3LZLlUMJjB5famH1vyncPI81DuldtLq79qao0ZbZpYLTbJTHVtDxipqGnjnH3LTwAPeCSMgYopZezsI4U6nsRSn0RdWz3ZlrrbNWt1Rqe9VMVqe8tFdUu6ySXBIc2GPIAaCMZ4NBzjeIIWy2z/ZRofRHVzWaztkrmNwa6qPWzk+IJ4MP5AaFDeiztFs1/wBG0OkXGOjvFqpxF1BOBURt5SM8Tj1h48eRV1K0vK9XjcHsl0KopYyERFYlZrL0lNiDdyq1no2lO9kyXC3RM4Y4l0sYHztA8SPBawrpwtLulVs6GkdYC/WumbFZLu4uayNga2nn+7jAHIH1hy5uH3KzWn3bl/lT9CKceqKYREWWIgiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAtotlHRrt8lop7pryarNVMzf+psLurEIJ4B7xkl2MZAxjOOKoHZbDFUbTdK087A+KW80bHtPJzTMwELoosXqNxOniMHjJJCKfMryj2JbLKQARaPpHYGPts0svfn7p5Xp+w/sy/Ay1/2D/NZ/XGqLRo3TVTqC+TOjo6fdBDG7z3ucQGtaO8kn9pOACVUv+VHs/8A6H1P/u0H/OWNgrmqsxbfqSPhRqZqWGKn1Hc6eBgjiiq5WMaOTWh5AHyLcvZpsq2d3LZzpq412k7fPVVVppZppXB2XvdE0ucePMkkrTC+VUdde66tha5sdRUySsDhggOcSM+fFdA9kPxUaS/UlH+5YslqM5Qpxw8EdNbmEueyLZrBbaqeLR1tbJHC97TuuOCASOZWha6W3r4Grf0eT6JXNJeaZOUlLieeR7UQREWVIgiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgLa6KukIdU7To6itibLRWmL0uRrt0hz8gMaWkHIySe71eYOM7vKguhLaG02gbveXRlstdceqBI9aOJg3T/akkHuV+rXNQqOdZrwJ4LCCIisis0f6TWgbhpPX9dd207nWe8VL6mnna3sNkeS58R8CCSR4jlyOKnXS28W233i2VFsulHDWUVQzcmhmbvNePMfPnuIytLOkLshn2eXFlztTpanTtZJuxPfxfTSc+ree8HiWu78EHiMnPWV6qiVOXP6kM4Y3RVEMkkMrJoZHRyMcHMe04LSOIIPcVfGy3pJXyxxRW3WFLJfKJpx6Wx+KtgJzx3juyY5AHdP4xVCIr2rRhVWJrJQm1yOimhddaV1tRek6cvEFW5rd6WAncmi/KjPaAzwzjB7iVJFzX0/e7tp+6xXSyXGpt9bEcsmgeWnHgfFpxxByD3hb1bC9odPtE0XHcH9XHdKUiG4wsGA2THBzR964cR7x3LB3dk6HxR3RNGeSfKHbZ9KR6y2b3iy9R1tUYHTUQHMVDAXR4Pdk9k+TipiisoScJKS6FZzHRS/bPaY7HtV1LbYYmxQx3CR8UbeTGPO+0DyAcOCw2k7Q+9XuGibwj9eV2PVYOfy8B71s1a5p0aDr1HiKWX5EdChOvVjSprMm8I++mNL3K/O34WiGlBw6eQdn2Ad5//sqxLRoexULWmaA1soHF83EH+ry/apHTQQ01Oynp42xxRt3WMaMABKmeGmp31FRI2OKNu897jgALi+rdrdQ1Go4UZOEHyUeb82t2/ktjrWmdmLKwpqVVKcurfJeS5Lz5nzp6Ghp27kFHTxN8GRBo+YL9vpqeRoa+CJwHIFgOFB7ptIpo5jHbqB1Qwf8AeSv3AfYME4+RfCh2lfbcV1sxGfuoZMke48/lCpXZXXJw73u36yWfbOfuVvtJo8J91xr2ePfGCVXPSthuAJmt0Mbyc78I6t2fdz596gGsNFT2eI1lDJJVUgzvgt7cQ8TjmPPAVoWuvpblRR1lHKJIZBwI5g+B8CvSQCCCAQeYKh03tHqWlVuGUm0nhxl9N90/Ikv9BsNSpcUYpN8pR+u3M13RSHX1lFmvr2ws3aWcdZDjkPFvuPzEKPLt9nd07yhCvSfwyWV/XyOQ3drUta0qNTnF4MxpjT1df6ox04EcLP8ASzOHZZ5eZ8lZNo0NYqGNvXQGtmHN8xOP7I4Y9uVk9KW6K12ClpY2gO3A+Q49Z5GSVk3Oa1pc4hrQMkk4AC49r/ay8vLiVK3m4U08LGzfzb57+HI6nonZq1taEaleKlNrLzul8kuW3jzPPBQUNOMQUVNEPBkTW/sC9BY0s3C1pb4Y4Kqb/r27VFXIy2SNpaZriGEMBe8Z4E55ewLFs1dqRr98XWbPm1pHyEYVzS7C6pXgqlSpFN9G2367P7lvU7ZadRm4U4NpdUlj03LerLRa6xhZU2+mlGc8YxnPt5qGan2fw9Q+psjnMexufR3EuDuZ7JPHPkV7tnuqqu9zzUNeyMzRx9Y2RjcbwyAcjlniOSmSxLu9V7O3boubysbZzFry/szJq103XbXvVDZ9cYkv69jXh7XMcWPaWuacEEYIK+1uY2S4U0bwHNdK0OB7wSFI9qNC2k1Q6VgaG1UYlwPvuIP7M+9R61fClJ+eZ9ILs9pexvbGNzDbijny2+zOT3No7S8lby34ZY89/uXF9Z+m/wCio/7bv5rH6h0ban2edlrtkbaw7oidvu4HeGTxPhlS1FwijruoUqkanfSeGnhylh46Pfkdlq6PY1Kcod1FZWMqKz6bcyJ2DQtpoGB9awV9QRxMg7A9jf55Umio6SJm5FSwRt8GxgBYTU+rbbYn+jv3qmqxnqYyOz4bx7v2qLHaXV7+RaoN3w605+XCzMdL1/W4/wCJlmSfLLSXosrbyWDFPUdF0h9xFpNc8Jt+rw9/N5LAqrdb6phZU0NNM09z4gVFb/s/ttVDJJayaSpJy1rnExHyPMj3fIvfpnWVsvUjadwNJVuOGxPOQ7h3Oxj3cCpKsarnVtDr8DlKEl0fJ+nJov3b6brFHiSjNPqua+6ZQN0oKq2V0lHWRGOVh4juI8R4hfm3RsluFNFIN5j5WtcM8wSMq4Nc2Bl8tLuqY0VkI3oXY4nxb7D+1U7QytgrYJ3glscjXkDngHK6/wBnddhrFrx4xOO0l918n/I5br2jS0q44M5hLeL+3mjfe17Htm1sudLcqHS1NBV0kzJ4JBNKSx7HBzXcXY4EAqdqmdO9I/Q981BbrJSWrUTKi4VUVLE6WnhDGvkeGguIlJxkjOAVcytq0asWu8z6mMWOhi9U6dsuqLQ+03+gjrqJ72vdE9zgN5pyDlpBUP8AsIbLPwQpf7+b/GpBtI1na9B6ZfqC8QVk9KyVkRZSsa6TLjgcHOaMe9Vd/lR7P/6H1P8A7tB/zlXRhcOOaecfI8bj1NS9RU8NJqC40tOzchhq5Y425Jw0PIAyePILoBsh+KjSX6ko/wByxc/L5VR117rq2Frmx1FTJKwOGCA5xIz58V0D2Q/FRpL9SUf7liyOp/lxyUU+Znr18DVv6PJ9Ermkult6+Bq39Hk+iVzSXmlcpegqBXJsa2C33W1PDebzM6zWKRofFIWgz1IzzY0+q38Z3lgOByPx0Xdm9NrjVk9xvNOZbLaQx8jCOzPMTlkZzzbgOLh7AfWW6zGtYwMY0Na0YAAwAFJfXrpvghzPIQzuyt9KbDtmun6djBp+K6zN5z3PE7ncQeLSAzu7mjv8Sp5R2i00TGso7XRUzWEFoip2sDSOWMDyC+Gq9Q2fS1jqL1fa2OjooB2nu4kk8mtA4uce4Ba9al6VLGVrotOaV62ma7hPW1G654/IaDu/2j7ljIU69zusskbUTYuts1nrc+m2qgqd7Oeup2PznnzHeq91psH2c6jppBDZm2WrdxZUW77Vun836hH9UHwIVd6U6VFLNWsg1Pph1LTudxqaGfrCwcMZjcBkcySHZxyBWxFkulvvdpprraquKsoqpgkhmjOWuH8D3EHiCCDxScK9s8vKCakaV7ZNiGodBufcaEy3mxBu86rji3XU/HlI0E4HLtDgfLkqnXTWohhqaeSnqIo5oZWFkkcjQ5r2kYIIPAgjuWifSJ0CzQWv5aehic2z17TU0GTkMBPaiz+KeA790tzkrKWN66vwT5kc4Y3RsLst2b7KtYaAs+ovrQohLVU469rKiUhsrey8evw7QKk32ENln4IUv9/N/jVRdCbVjI57toupe7Mv+fUmTwyAGyN8jjcPuK2hWOupVaVVx4n7lccNHN7WljqNNasulgqWyCShqnwgvbguaD2XY824PvWIV69M3Tn1N2h0l+gptynu1KOska3AdNGd12Tnnu9X3D38VRSz1Cp3lNS8SKSw8Gx3Re2SaY1bpCvv+rbT6e2Wq6miHpcke61g7bsRubzLscSfV4Aczbn2Atkv4J//AGNV/wA1SXZJYDpfZpYLG9m5LT0bDM3BGJX9uTgePrudzUpWv17qpKo3GTS8yZRWDS/pUbOrLoW+Weo03QGitlfTvaY+vfLiaNw3jl5JGWvb39xVLreLpV6dN/2QV80TA6e1SNr48uDey3LX+3sOccd5AWjqzFhWdSlu90RTWGTjYTpSDWW1G0Wasi6yh3zPVt3sb0UYLi09+HEBvDj2u7mNvPsIbLPwQpf7+b/Gqv6EWmXRUV71dPE5pmc2gpnFgALW4fIQeZGdwdwy08yOGyix1/cT77hi8YK4R2NcekfofZtofZvNWWvTNFT3asmZTUbjNK5zSeL3BpcQcNB58ASPIHVVXT0vtVtv20ttlpw70axRdRkk4dM/DpCB3D1G8uJaeJGFSyydlGSpJyeW9yib3CIiuygIiIAiIgCIiAIiIAiIgCIiA3f6JTWt2I2staAXVFSXEDmetcP4BWyqe6H9bHVbGKeBgw6jrqiF/HOSSJPdwkCuFatdfnS82XMeQRfKrqKekppKmrnip4Im70ksrw1rB4kngAq81Ztw2badLo5dQR3CoBx1NvaZzzwe0OwMeBcCo4U5zeIrIbwWQqm6VN+sVs2UXC13VwkqrmBFRQhoc7rAQ4P58Gt3efu45VVa06Ud5qg6DSdjprcwhw9IrT10vPgWtGGtOMc94KhtR3y76ju0t1vlwnr62X1pZnZOByA7gB3AcAsna6fNSU57YKJTXQxyIvtR0lVW1DaejppqmZ5AbHEwvcSTgYA48yFmiE+Kv/oQ+mfZAve453oX1KPXN3hgydazcJHecdZx7snxWI0D0c9cX6aOa/Mj09QEBxdORJO4HuEbTwP5ZbjwK2q2caIsWgtOss1jgIbnennkwZZ3/fPI+Ych3LGX13T7twi8tkkIvOSTIiLBExo90smtbtwu5a0Auhpi4gcz1LBx9wCx+xylAgr64k5c5sQHhgZP7Qv70mqwVu3DUcjSS2OSKEAknG5DG0494J96++x17TZ62IHttqA4jyLRj9hXnayU4aFJLrw590ZzsnGMtWhnpnHsycqv9sFweyCjtkbyGyEyygHmBwaPlyfcFYCrPbHBILjQVJA6t8LowfMHJ+kFzzsZTpz1ilx9MteaT/ub92rnOGl1ODrhPyyv7EDREXdDjZJNG6qk07HUxGkNVHMWuDet3NwjOTyPPh8ikH2Tf/RP/lf/AIUMsdkuN6kljt8IkMQBfl4aBnlzWW+sTUn/AIOP++b/ADWpapp3Z2pdSneuKqPGczafLbbiXT5G0adfa7Tt4xtFJwWcYimufjh9T8ay1Q3UUVM02/0Z0DnEO67fyDjI9UeAUbWYvem7tZqZlRXwsjje/caRI1xJwTyB8l6dCWFt9u5jnLhSwN35cHBdx4N8s/sBWTtq+nadp7qW8l3MM8nxdd0nl75fiY6vRv7++VOun3ssc1jp4YXQ/dtvGsLg/qqCprp8YB6tuQ32nGB71IIbPtBqY3MnuTYGuGCJZgcgj8UFWBS08FLA2Cmhjhib6rGNAA9wX5raumoqV9TVzMhhYMue84A/6+S5jddrHWqcNpawWeWYpy+30Z0O37Nd1T4rm5m/H4ml/XqVxHs1rz/pLlTN4/csceHzL1QbMxnM93JHgyDHzl38FlqvaDYITiL0qp844sD/ANxCx9RtLpG/6vap5Py5Qz9gKysbztfcL4INf/MV/wAjHStey9B/FJP1k/oSTTOm7dYGyGjMr5JQA+SR2SQO7gAAFmVDtF6rrdQXqankpIoKaOnLxu5c7e3mgZdy7z3KYrS9aoXtG7avnmo0m98+Rtek1rStbJ2axBZS2wVttkaBWW5/HJjePkI/moTavhSk/PM+kFNtsjgay3M45Ebz8pH8lCbV8KUn55n0guv9l8/uOlnwl9Wcu7RY/fNTHjH6Iv8AXjvlcLbaKqvIDupiLmg8i7uHvOF7Fh9awPqdKXGKP1upL/bu9r+C4rYU6dS6pQqfhckn5NrJ1u9nOnbVJ0/xKLa88bFJ1M0tTUSVE8jpJZHFz3HmSe9fNEX0ikorC5HAm23ln6ikfFKyWNxa9jg5rhzBHIq9dNV7rnYaOukGJJYgX8MdocCfZkFUQrs0FA6n0hbo3DBMZk9znFw+Yrn37Q6dN2dKo/xKWF5NPP6pG8dhak1dVIL8PDn1ysfVmcVG6wpG0Op7hTMAawTFzQBgAO7QHzq8lS20KVs2sbg9pBAe1vvaxoPzhYT9nk5q+qxXJx3801j6sy/bmMXZ05Pnxfph5+iPRsl+NXSP68ov37F0RXO7ZL8aukf15Rfv2Loiuhar+OPkc1p8inumB8TFR+nU/wBIrShbr9MD4mKj9Op/pFaUK60z8n1KanMLofsh+KjSX6ko/wByxc8F0P2Q/FRpL9SUf7lij1X8EfM9p8zPXr4Grf0eT6JXNJdLb18DVv6PJ9ErmkqdK5S9BUN3OiPaIbbsYoaxjMS3OpnqZctIOQ8xN5nluxg9w4+824q06L9Syq2HaeLRgxNnicPAtnk/hg+9WWsZctutLPiySPI026Yeq6m7bR/raY8iissbBuh3B80jGvc7ng4Ba3lkYcqQVmdJ62y23bXfesZusqnR1MR44c10bcnj+MHcuGQQqzWx2sVGjFLwIJcwtiOhVqmuh1RcNIyzl1vqaV1XDG4+pM0tB3fymk5/JHmtd1dXQ3tc1btadcGsBht9BLI9xJGC/DAB4k7x59wPkqbxJ0JZEeZucqH6a1op6rZ1bbwYyamguIjY8DOI5WHfB8MlkfHy81fCprpi1UdPscfE+UsdU3GCJgGe2RvPxw8mE8fBYG0bVeOPEmlyNTdnGpanSGuLVqGmkLfRKhplA+7iPCRp9rSQuiVJUQVdJDV00rZYJmNkikach7XDII8iCuZi3X6JWq/rh2Xx2uYYqrG/0Rxz60R7UZ+TLf6qyWqUcxVRdCim+h+ulrplt92T1Fwiia6qs0ratjtwl3VnsyAY5DBDj3dj3jWDYLp0ao2s2G2yMLqdlR6TUYcW9iIb5BI48S0N9/Mcxvpd6Clutqq7XWx9ZS1kD6eZmcbzHtLXD5CVrv0RNDVNk1bq65XFjTNbJ3Wdjg12C9rt6UgnhjDY8czh3cOdva3PBbzXVcvU9lHMkbJKC2TaBS3LbJfNBsMThb7fDOx7DnMuftrSfECSLAGcbr8nuEwu9dT2u1Vdzq3btPSQPnldkDDGNLieJA5A8ytFdm+uKuDbtQ6vrZsOrrmfSnSEO3Y5nFrhk4AAa7geAGB3cFBa2/fRm/BfqVSljBvZdKKnuVsqrdVtLqeqhfDKAcEsc0tIz3cCub+pLTU2HUNxslZg1FBVSU0hHIuY4tJHkcZC6ULWbabs5F06VVjzDvUF2ay4VO9vbpEA+2NJ8wxg4ffjkptOrqm5J8sZ9imayXXsc0y3SOzSyWQxNjqI6YSVOGFpMz+2/OeOQTjj3AcByGS19qKm0no266iqiBHQ05kAIzvPPBjeYzlxaMZHNZxa0dNfWEbaa2aIpJcyvcK6tAPqtGWxNPmTvOx3Yae9W1GDuKyT68ypvhRrNcayquNwqbhWzOnqqmV000rub3uJLnHzJJK86ItnLcIiIAiIgCIiAIiIAiIgCIiAIiIDYnoc63tlij1JZb3XwUVGIm3GOWZwY1u7hkgyeJJBjwPxThZTab0nA181v0FQhwBLRcqxhwfxo4j8oL/e1axIrSVlSlUdSW5XxvGDM6n1TqPU9T6RqC919yeHFzRUTFzWE891vqtHkAAsMiK6SSWEUhEUi2aabk1fryz6cjduitqQ2V33sTQXSEeYY1x/kkpKKbYLI2CbDazXEUOob/LJQ6f3z1bGD7dWYOCGn7lmcgu4k4IA7xtnpPSWmtJ0QpNO2Wjt0e6GudFH25AOW+85c8+biSspbqOlt1vprfRQtgpaaJsMMTeTGNADWjyAAC+61m4up15bvbwJ4xSCIitioLy3eup7Xaqu51bt2npIHzyuyBhjGlxPEgcgeZXqVE9L/XUNl0d9Z1K+N1wvDGumG8Q6GnD872MYO8WFvE8t73S0aTqzUEeN4WTUu/3GW8X24XacES1tVJUvBdk7z3Fx48M81ntl92Zb78aWZ4bDWNDMk4AePVz8pHvUTRZ7ULGnfWs7afKSx5eD9HuVWN5OyuIXEOcXn+K9VsbELFaqssV9tL6J7urkB34pMZ3XD+Hcoro7XcLoY6G9vLJGtw2qJyH/AJXgfPv71PY3skYHxva9p5OacgrhN3YX+hXalNcMovMZdHjwf290dmtb2z1i2ai8prDXVef8fYpK7aYvdtndHLQyysB4SwsL2Hhnnj9uF87fp69V0zY4LbUjeI7b4y1oz3knuV5otoj+0O7VLhdKPF45ePb+Zrr7DWrqZVR8Pht9f5GC0Vp5mn7a6J72y1Mzg6Z7Rw4cmjyHH5Ss6hIAJJAA5kqG6t1xR0ET6W1SMqasjHWN4xxn2958uXj4LVaVvf67eOUU5Tk930Xn4Jf2NkqV7PR7VKT4YRWy6vy8WYPa5c2VFfTW2GRrxTgvlxxw88ACfEAcvP5PRsZewS3SIuG+4RODe8gb+T84+VQCaWSaZ80r3PkkcXPc45LieJJWT0pepbFd2VjGmSMjcljzjeaf49663d6A46FLTqO8kvdp8X6s5jba2payr+tss+ya4f0ReSiG1SgrK2xQupI5JRBNvyRsBJxgjewPD+KklpuVFdKVtTQ1DJmEDIB4tPg4dxXrXHbG5q6VexrOPxQfJ7eh1O8t6Wo2kqSl8M1zRruvbarXcLpOIaGklmOcEtb2W+08h71eU1voJnb01DTSOJJy6JpOT7l9+xFGT2WMaMnuAC36t+0XMMUaHxfN7fot/wBDS6XYRKeatb4fkt/rt+pgtFadjsFuLXlklZL2ppAOX4oPgFn1hbZqW23O9yWuheZjHEZDMPUOCBgePPms0tB1V3k7l1LxNTlvvts+W3TyN005WsaCp2rThHbb5c9+pWe2P4RoPzLv2qGWr4UpPzzPpBTnbFSymahrWxuMQa6NzwOAOcgE/L86g1q+FKT88z6QXZOzEoy0Onh8k/qzlXaKLjrFTK6r6Iv9CAQQQCDzBReW7V8Nst8tdUBxiiwX7oyQCQM/OuHUqc6s1CCy28LzZ2GpONODnN4S3ZXWsdDVUFS+rssJnp3kudA3G9F7PEeziPnUSNruYkMZt1YHjm0wuz8mFetDV0tdTNqaOeOeF3JzDkezyPkvut5su3V9Z0+4uKam47ZeU/X5+3zNOu+xtndT76hPhT3wsNehVmlNC11VVMqLtGaalY7Jid68nljuHjnj+1Wk1rWtDWgNaBgADAAX9XmuVwo7bSuqa6oZBEO93f5AcyfILXtV1i81uvF1FnpGKXj4dW2ZzTdKtdIoyUH83J/fokj83ivgtdtnrqggMhYXYzguPc0eZPBUPVTPqaqWolOZJXl7j5k5KkOt9Uy36cQQB0VBG7LGHm8/fO/koyuo9kNBnpdvKpWX+ZPGV4Jcl5+P8jnPanWoajXUKL+CHJ+L6vy8CT7JfjV0j+vKL9+xdEVzu2S/GrpH9eUX79i6IrK6r+OPka5T5FPdMD4mKj9Op/pFaULdfpgfExUfp1P9IrShXWmfk+pTU5hdD9kPxUaS/UlH+5YueC6H7Ifio0l+pKP9yxR6r+CPme0+Znr18DVv6PJ9Ermkult6+Bq39Hk+iVzSVOlcpegqGzPQp1lFE+5aGq3hrpnmvoiT6zt0NkZ8jWuA8nLZ9c0bTcK603KnuVtqpaWspniSGaN2HMcO8LcPYvt8sOqqemtGpporRfAzDpZXNjpql2cDccT2XH70+4nkqNQtJcXeQW3U9hLozNdIDZPT7R7RFU0UsdLfqFhFLK/gyVhOTG/HHGeIPcSfErUPU+znW+nK11Lc9NXJuHua2aKndJFJgkZa9oweWfHGD3roait7e+nRXDzR7KCZz+0nsn2galr20lFpm4Uzc9uorYXU8LPa54GfYMnyW4+xjZtbNm+m3UNM/wBJuNVuvr6sjHWvAOAB3Nbk4HmSeanS/M0kcMT5ppGxxsaXPe44DQOJJPcFTcXtSuuHkj2MEj9LUbpnawbdNWUOk6R8T6e1MMtQ5jmuJnfw3TjON1oHDgcuORwCsLbZ0gbXp2J9o0ZPS3a6va5slW12/BSnkCDykd5chjjnktQZpJJpXzTSOkke4ue9xyXE8SSe8q80+0kpd5NeRROXRH4Vs9FbVrdM7U6alqqgxUF4Z6HKCez1hOYif63Zz3bxVTL6U00tPUR1EDzHLE8PY4c2uByD8qylWmqkHF9SNPDydNF8KWjpaWSpkp4WxOqpeumLfu37rW7x88NaPcsBst1M3WGgLPqL7WJaqnHXtYchsrey8eXaBUmWqyTi3FlyVH0tNRusWyKqpIZN2ou87KJuCMhhy+Q4PdusLSfxwtI1fPTR1Kbjr+i03FITDZ6UOkbw/wBNNhx9vYEfPxPvoZbDp9Pgor57kE3lnQrY1qMar2Y2G9F2ZpaVsdRwA+2x/a3nA5AuaSPIhSaShpZLnBcnwg1cEMkEUmTlrJHMc9vhxMTD/VWu/Qh1A6a0X3TEr2/5tKysgbgA4eN1/fkgFrO7hnnxC2QWEuafdVZRRNF5R+ZpI4YnzTSNjjY0ue9xwGgcSSe4LnhtU1TUaz19dtQTybzKictp2jOGQt7MbRnH3IGeAySTjitt+lZqtum9lVVQxBxq7070GPBIDWEZkcSO7dBbjPNw4EZWkKyWl0cRdR+RHUfQIiLLEQREQBERAEREAREQBERAEREAREQBERAEREAVv9ELq/s00m/u73odRuZ553e7zxn3ZVQKZbE9Rw6T2pWK91TyyliqOrqHBwAEcjTG5xzwwA7PuUNxFypSS8D2PM6DIiLVS5CIoVtQ2naW2fUPWXir66ue0mCggIdNIccCR9y38Y8PDPJVQhKbxFZYzgyW0XWVm0Lpiovt5nDWMBbBCD26iTHZjYPE+PcMk8AtBtd6nuWsdV12obrIXT1Uhc1mcthZ9zG38VowPPmeJKyG1DX1+2hah+qt6la1kTTHS0sQxFTsznA8Se9x4nh3AARNbDZ2ioLL/EyCUshERXpQF7rbd7nbTmhrp4B3ta7sn2jkV4UUdWlCrHgqRTXg90SU6s6UuKDafitiVwa/1DG0B8lNKQMZfCMn5ML+zbQNQvbhrqWI+LYv5kqJosX/ANPaXnP+Hj7IyX781HGO/l7syVzvt4uQIrbhPK08Cze3Wn+qMBY1EWTo0KVCPBSiorwSwv0MdVrVK0uKpJt+LeQiIpSI9FDW1dDMJaOplgeCDmN5Gfb4qQUuvNRQRtY6eGfd75Ihk+3GFF0VldabaXe9elGT+aTfuXltqF1a7Uajj5Nksn2gahkjLWOpYifumRcR8pIWDul6ut0/1+umnbnO4ThoP5I4LHoo7bSLG1lxUaMYvxSWffmV3GqXlyuGrVk14ZePY+1JVVVHL1tJUzU8mMb8Ty048Mhe1moL6w5F4rz7ahx/aVjEV1UtaNV5nBN/NJltTuK1NYhNrybPfW3m7VsBgq7jVTREglj5CQceS+Nq+FKT88z6QXmXptXwpSfnmfSCpdGnSoyjTiksPksFUas6tWMpybeVz3L/AFgtoH+x9x/Ib9ILOrBbQP8AY+4/kN+kF8+6P/5Ch/vj/wAkdw1T/sa3+2X0ZT1uuFdbpjLQ1UtO8jBLHYyPMd6kMGv9QxtAfJTSkDGXwjJ+TCiiLvl1pdldvir0oyfi0s+5xS21G7tVijUcV4JvHsSer13qOcYZUxU4/wDKiH8cqP1lXVVkvW1dTLO/76R5cR8q+CKq1060tPyKUY+SSPLm/urr86o5ebYREV6WZ9aSoqKOrhq6SeWnqIHtkilieWvje05DmkcQQQCCFIvsibQPw51P/wAWn/xKMIqXGMuaPTN3jV+rLzRGivGp73caUuDjDVV8ssZI5Hdc4jIWERF6klyAUmotoGuqKjho6PWN+p6aCNscMUdfI1kbGjAaADgAAYwoyiOKlzQJU/aRtAexzH621C5rhhzXXGUgjwPaUVRF4oxjyQCIiqPCV6V2j650vGIrHqa4UsIIIhc8SxDAwMMeC0cMDl3DwCm9J0kNpsLYxJVWupLGgOMtEBvnHM7pHHv4YCp1FFKhSm8yij1SaLfuPSO2n1WOorrdQ9kj7RRMOT49ve4/MoDqvW+rtVH/ALQ6huFwjyCIZJSIgQMZEYw0HzAUeRIUKcN4xSDbYREUp4EREBmrLqzVVkozR2bU16ttMXl5hpK6WJm8cZO61wGeA4+S9v2RNoH4c6n/AOLT/wCJRhFS4Re7R7k9Fwray41stbcKuerqpnb0s08hfI8+JceJPtXnRFUeHust3u1krDWWa6VttqSwsM1JUOifunGRvNIOOA4eSzP2RNoH4c6n/wCLT/4lGEVLhF7tHuTKX3UWoL/1P1dvt0uvUb3U+m1ck3V72N7d3ycZwM454CxaIvUklhAIiL08CIiAIiIAiIgCIiAIiIAiIgCIiAIiIAiIgCIiA2h2G9IOyUOm6TT2uZqqnno2dXDcRG6ZkkYHZDw3Lw4DhkAg44kd8ov/AEmdA0Mbha6a63aXHZ3IREwnB5l5BHHA9U8+9abIrGWn0ZS4mV8bLt150kdaX1k9JYoqbT9G84a+HL6nd8DIeA9rWgjxVL1dRUVdTJU1c8tRPK7eklleXOefEk8SV8kV1TowpLEFgpbb5hERSHgREQBERAEREAREQBERAEREAREQBERAF+o3ujkbIwlrmkEEdxC/KI1k9TwZ768dS/0rJ/YZ/JfGu1Nfa6kkpaq4PlhkGHsLGjPf3BYdFYQ0qxhJSjRimv8ASv4F5LUryScZVZNP/U/4hERX5ZBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAEREAREQBERAf/Z" alt="Capflow" class="logo-img"/>
+    <div class="hdr-right">
+      <div class="hdr-badge">Merchant Review</div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- FORM -->
+<div class="page" id="FS">
+  <div class="card">
+    <div class="slbl">Merchant details</div>
+    <div class="fgrid">
+      <div class="field"><label>Merchant / Business name</label><input type="text" id="appN" placeholder="e.g. Smith Electrical Pty Ltd"/></div>
+      <div class="field"><label>Requested advance amount</label><div class="awrap"><span class="cur">$</span><input type="number" id="reqA" placeholder="50000" min="0" step="1000"/></div></div>
+      <div class="field"><label>Industry / business type</label>
+        <select id="ind">
+          <option value="">— Select —</option>
+          <option>Retail</option><option>Hospitality / Food &amp; Beverage</option>
+          <option>Construction / Trades</option><option>Transport / Logistics</option>
+          <option>Health &amp; Beauty</option><option>Professional Services</option>
+          <option>Waste Management</option><option>Wholesale / Distribution</option><option>Other</option>
+        </select>
+      </div>
+      <div class="field"><label>ABN / ACN (optional)</label><input type="text" id="abn" placeholder="e.g. 12 345 678 901"/></div>
+    </div>
+    <div class="field"><label>Additional context (optional)</label><textarea id="nts" placeholder="e.g. Merchant has existing MCA, operates seasonally, broker notes…"></textarea></div>
+  </div>
+
+  <div class="card">
+    <div class="slbl">Bank statement / illion report files</div>
+    <div class="ucard" id="dz">
+      <input type="file" id="fi" multiple accept=".html,.htm,.txt,.csv,.pdf"/>
+      <h3>Drop files here or click to browse</h3>
+      <p>BankStatements.com.au HTML exports · Multiple files supported</p>
+    </div>
+    <div class="pills" id="pills"></div>
+    <button class="btn-run" id="runBtn" disabled>Generate Merchant Review</button>
+    <div class="sbar" id="sb"><div class="spin"></div><span id="stxt">Reading statements…</span></div>
+    <div class="ebar" id="eb"></div>
+  </div>
+</div>
+
+<!-- REPORT -->
+<div class="page" id="RS" style="display:none">
+
+  <!-- PRINT-ONLY TOP BAR -->
+  <div class="print-top-bar" style="display:none">
+    <div style="background:var(--navy3);padding:8px 14px;border-radius:7px;display:inline-block">
+      <img src="LOGOPLACEHOLDER" style="height:24px" alt="Capflow"/>
+    </div>
+    <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.8px">Merchant Review — Confidential</div>
+  </div>
+
+  <!-- HEADER BANNER -->
+  <div class="report-hdr">
+    <div class="report-hdr-left">
+      <div class="report-entity" id="rName">Merchant Name</div>
+      <div class="report-sub" id="rSub">Industry · ABN</div>
+    </div>
+    <div class="report-meta">
+      <div class="report-req-lbl">Requested advance</div>
+      <div class="report-requested" id="rReq">—</div>
+      <div class="report-date" id="rDate"></div>
+    </div>
+  </div>
+
+  <!-- KEY STATS ROW -->
+  <div class="stat-row" id="statRow"></div>
+
+  <!-- TWO COL: deposits + cashflow profile -->
+  <div class="two-col">
+    <div class="section-card">
+      <div class="section-title">Monthly gross deposits</div>
+      <table class="dtbl">
+        <thead><tr><th>Month</th><th>Gross</th><th>vs avg</th><th>Trend</th></tr></thead>
+        <tbody id="depBody"></tbody>
+        <tfoot id="depFoot"></tfoot>
+      </table>
+    </div>
+    <div class="section-card">
+      <div class="section-title">Cashflow profile</div>
+      <div class="fact-list" id="cashflowFacts"></div>
+    </div>
+  </div>
+
+  <!-- TWO COL: credit behaviour + existing obligations -->
+  <div class="two-col">
+    <div class="section-card">
+      <div class="section-title">Credit &amp; banking behaviour</div>
+      <div id="creditBehaviour"></div>
+    </div>
+    <div class="section-card">
+      <div class="section-title">Existing obligations</div>
+      <div class="fact-list" id="obligationFacts"></div>
+    </div>
+  </div>
+
+  <!-- FULL WIDTH: observations -->
+  <div class="section-card" style="margin-bottom:20px">
+    <div class="section-title">Key observations for underwriter</div>
+    <div class="obs-list" id="obsList"></div>
+  </div>
+
+  <!-- FULL WIDTH: business profile -->
+  <div class="two-col">
+    <div class="section-card">
+      <div class="section-title">Business &amp; entity profile</div>
+      <div class="fact-list" id="bizFacts"></div>
+    </div>
+    <div class="section-card">
+      <div class="section-title">Revenue sources identified</div>
+      <div id="revSources"></div>
+    </div>
+  </div>
+
+  <div class="rfooter">
+    <button class="btn-download" id="downloadBtn">⬇ Download PDF</button>
+    <button class="btn-new" id="nb">+ New Review</button>
+  </div>
+</div>
+
+</main>
+
+<script>
+let files=[],orig={};
+
+function fmtSz(b){if(b<1024)return b+"B";if(b<1048576)return(b/1024).toFixed(1)+"KB";return(b/1048576).toFixed(1)+"MB";}
+function renderPills(){
+  const c=document.getElementById("pills");c.innerHTML="";
+  files.forEach((f,i)=>{const d=document.createElement("div");d.className="pill";d.innerHTML=`<div class="pill-icon">HTM</div><span class="pname">${f.name}</span><span class="psz">${fmtSz(f.size)}</span><button class="prm" data-i="${i}">×</button>`;c.appendChild(d);});
+  c.querySelectorAll(".prm").forEach(b=>b.addEventListener("click",()=>{files.splice(+b.dataset.i,1);renderPills();document.getElementById("runBtn").disabled=files.length===0;}));
+  document.getElementById("runBtn").disabled=files.length===0;
+}
+document.getElementById("fi").addEventListener("change",function(){files=[...files,...Array.from(this.files)];this.value="";renderPills();});
+const dz=document.getElementById("dz");
+dz.addEventListener("dragover",e=>{e.preventDefault();dz.classList.add("drag");});
+dz.addEventListener("dragleave",()=>dz.classList.remove("drag"));
+dz.addEventListener("drop",e=>{e.preventDefault();dz.classList.remove("drag");files=[...files,...Array.from(e.dataTransfer.files)];renderPills();});
+function readFile(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsText(f);});}
+function stripHtml(h){const d=document.createElement("div");d.innerHTML=h;d.querySelectorAll("style,script").forEach(e=>e.remove());return d.textContent.replace(/\s+/g," ").trim();}
+
+function buildSys(){
+return `You are a senior financial analyst producing a factual merchant review for an MCA underwriter. Your job is to extract and present the facts clearly — NO funding decision, NO approve/decline recommendation. Just the facts organised so an underwriter can quickly understand the merchant's financial situation.
+
+CRITICAL: Return ONLY a valid JSON object. Start with { and end with }. No markdown, no preamble, no explanation outside the JSON.
+
+Return this exact structure:
+{
+  "merchant_name": "string",
+  "industry": "string",
+  "abn": "string or Not provided",
+  "account_holder": "string extracted from statements",
+  "statement_period": "e.g. Sep 2025 – Mar 2026",
+  "banks_identified": ["bank name"],
+  "num_accounts": 0,
+  "key_stats": [
+    {"label": "string max 4 words", "value": "string", "sentiment": "positive|negative|warning|neutral"}
+  ],
+  "monthly_deposits": [
+    {"month": "Mon YYYY", "gross": 0.00}
+  ],
+  "cashflow_facts": [
+    {"label": "string", "value": "string", "sentiment": "positive|negative|warning|neutral"}
+  ],
+  "credit_behaviour": [
+    {"name": "string", "detail": "string", "status": "ok|flag|note"}
+  ],
+  "existing_obligations": [
+    {"label": "string", "value": "string", "sentiment": "positive|negative|warning|neutral"}
+  ],
+  "observations": [
+    {"type": "positive|negative|warning|neutral", "text": "specific factual observation with dollar amounts and dates where available"}
+  ],
+  "business_facts": [
+    {"label": "string", "value": "string", "sentiment": "positive|negative|warning|neutral"}
+  ],
+  "revenue_sources": [
+    {"name": "string counterparty or category", "monthly_avg": "string", "detail": "string", "status": "ok|flag|note"}
+  ]
+}
+
+EXTRACTION RULES:
+- key_stats: exactly 6 items — avg monthly gross deposits, avg closing balance, total ATM cash withdrawals/month, number of dishonours, gambling spend/month, existing loan repayments/month
+- monthly_deposits: every calendar month visible, exclude internal transfers between own accounts, exclude Revolut/Wise self-transfers, exclude round-trip peer credits mirrored by equal debits. Oldest to newest.
+- cashflow_facts: 5-7 items covering — peak month, lowest month, revenue consistency (stable/volatile), average daily balance, days balance near zero, largest single credit, largest single debit
+- credit_behaviour: list dishonours (with dates/amounts), gambling transactions (venues, frequency, amounts), ATM cash withdrawal patterns, Afterpay/BNPL usage, any MCA repayments seen
+- existing_obligations: all identified recurring loan/MCA repayments with amounts and frequency, rent payments, ATO obligations, asset finance
+- observations: 5-8 key facts an underwriter needs to know. Be specific. Use actual numbers, names, dates from statements. Do NOT make a recommendation — just state facts.
+- business_facts: account age, entity structure if identifiable, main trading bank, address from statements, industry signals
+- revenue_sources: identify distinct income streams with counterparty names (e.g. A&B Rubbish Removal, wages from XYZ Pty Ltd, Uber payments). Flag if peer-to-peer credits appear to inflate revenue.`;
+}
+
+document.getElementById("runBtn").addEventListener("click",async()=>{
+  document.getElementById("eb").style.display="none";
+  document.getElementById("runBtn").disabled=true;
+  const sb=document.getElementById("sb");sb.style.display="flex";
+  const ap=document.getElementById("appN").value.trim(),rq=document.getElementById("reqA").value.trim(),ind=document.getElementById("ind").value,abn=document.getElementById("abn").value.trim(),nts=document.getElementById("nts").value.trim();
+  try{
+    let txt="";
+    for(const f of files){document.getElementById("stxt").textContent=`Parsing ${f.name}…`;let t=await readFile(f);if(/\.html?$/i.test(f.name))t=stripHtml(t);txt+=`\n\n=== FILE: ${f.name} ===\n${t.slice(0,50000)}`;}
+    document.getElementById("stxt").textContent="Analysing merchant data…";
+    const rf=rq?"$"+Number(rq).toLocaleString("en-AU"):"Not specified";
+    orig={ap,rq,rf,ind,abn,nts};
+    const um=`Merchant: ${ap||"Unknown"}\nRequested: ${rf}\nIndustry: ${ind||"Not specified"}\nABN: ${abn||"Not provided"}\nContext: ${nts||"None"}\n\nBANK STATEMENT DATA:\n${txt}`;
+    const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:3000,system:buildSys(),messages:[{role:"user",content:um}]})});
+    const data=await resp.json();
+    if(!data.content||!data.content[0])throw new Error(data.error?.message||"Empty response");
+    let raw=data.content[0].text.trim().replace(/^```json\s*/i,"").replace(/^```\s*/i,"").replace(/\s*```$/i,"");
+    const jm=raw.match(/\{[\s\S]*\}/);if(jm)raw=jm[0];
+    const r=JSON.parse(raw);
+    renderReport(r,rf,ap,ind,abn);
+  }catch(err){
+    console.error(err);
+    document.getElementById("eb").textContent="Failed: "+err.message;
+    document.getElementById("eb").style.display="block";
+    document.getElementById("runBtn").disabled=false;
+  }finally{sb.style.display="none";}
+});
+
+function renderReport(r,rf,ap,ind,abn){
+  const now=new Date();
+  document.getElementById("rName").textContent=r.merchant_name||ap||"Unknown Merchant";
+  const subParts=[r.industry||ind||"","ABN: "+(r.abn||abn||"N/A"),"Period: "+(r.statement_period||"")].filter(Boolean);
+  document.getElementById("rSub").textContent=subParts.join(" · ");
+  document.getElementById("rReq").textContent=rf;
+  document.getElementById("rDate").textContent=now.toLocaleDateString("en-AU",{day:"numeric",month:"long",year:"numeric"});
+
+  // Key stats
+  const sr=document.getElementById("statRow");sr.innerHTML="";
+  (r.key_stats||[]).slice(0,6).forEach(s=>{
+    const d=document.createElement("div");d.className=`stat ${s.sentiment||"neutral"}`;
+    d.innerHTML=`<div class="stat-lbl">${s.label}</div><div class="stat-val ${s.sentiment||"neutral"}">${s.value}</div>`;
+    sr.appendChild(d);
+  });
+
+  // Monthly deposits
+  const months=(r.monthly_deposits||[]).filter(m=>m&&m.month&&m.gross!=null);
+  if(months.length){
+    const tot=months.reduce((s,m)=>s+Number(m.gross),0),avg=tot/months.length,mx=Math.max(...months.map(m=>Number(m.gross)));
+    document.getElementById("depBody").innerHTML=months.map((m,i)=>{
+      const g=Number(m.gross),p=avg>0?(g-avg)/avg*100:0,ps=(p>=0?"+":"")+p.toFixed(1)+"%",pc=p>=10?"var(--green)":p<=-20?"var(--red)":"var(--text3)",bw=mx>0?Math.round(g/mx*100):0,tr=i===0?"—":g>months[i-1].gross?"↑":g<months[i-1].gross?"↓":"→",tc=tr==="↑"?"var(--green)":tr==="↓"?"var(--red)":"var(--text3)";
+      return`<tr><td>${m.month}</td><td>$${g.toLocaleString("en-AU",{maximumFractionDigits:0})}</td><td style="color:${pc};font-weight:600">${ps}</td><td><div class="bwrap"><div class="bbg"><div class="bfill" style="width:${bw}%"></div></div><span style="color:${tc};font-size:13px;font-weight:700">${tr}</span></div></td></tr>`;
+    }).join("");
+    document.getElementById("depFoot").innerHTML=`<tr><td>Monthly average</td><td>$${avg.toLocaleString("en-AU",{maximumFractionDigits:0})}</td><td></td><td style="font-size:10px;color:var(--text3)">${months.length} months</td></tr>`;
+  }
+
+  // Cashflow facts
+  document.getElementById("cashflowFacts").innerHTML=(r.cashflow_facts||[]).map(f=>
+    `<div class="fact-item"><span class="fact-lbl">${f.label}</span><span class="fact-val ${f.sentiment||""}">${f.value}</span></div>`
+  ).join("");
+
+  // Credit behaviour
+  document.getElementById("creditBehaviour").innerHTML=(r.credit_behaviour||[]).map(c=>
+    `<div class="credit-item"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px"><span class="credit-name">${c.name}</span><span class="credit-badge ${c.status||"note"}">${c.status==="ok"?"Clear":c.status==="flag"?"Flag":"Note"}</span></div><div class="credit-detail">${c.detail}</div></div>`
+  ).join("");
+
+  // Existing obligations
+  document.getElementById("obligationFacts").innerHTML=(r.existing_obligations||[]).map(f=>
+    `<div class="fact-item"><span class="fact-lbl">${f.label}</span><span class="fact-val ${f.sentiment||""}">${f.value}</span></div>`
+  ).join("");
+
+  // Observations
+  document.getElementById("obsList").innerHTML=(r.observations||[]).map(o=>
+    `<div class="obs ${o.type||"neutral"}"><div class="obs-dot"></div><span>${o.text}</span></div>`
+  ).join("");
+
+  // Business facts
+  document.getElementById("bizFacts").innerHTML=(r.business_facts||[]).map(f=>
+    `<div class="fact-item"><span class="fact-lbl">${f.label}</span><span class="fact-val ${f.sentiment||""}">${f.value}</span></div>`
+  ).join("");
+
+  // Revenue sources
+  document.getElementById("revSources").innerHTML=(r.revenue_sources||[]).map(s=>
+    `<div class="credit-item"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px"><span class="credit-name">${s.name}</span><span class="credit-badge ${s.status||"note"}">${s.monthly_avg}</span></div><div class="credit-detail">${s.detail}</div></div>`
+  ).join("");
+
+  document.getElementById("FS").style.display="none";
+  document.getElementById("RS").style.display="block";
+  // Set logo in print bar
+  const ptb=document.querySelector(".print-top-bar img");
+  if(ptb)ptb.src=document.querySelector(".logo-img").src;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+// Download PDF using html2canvas + jsPDF
+document.getElementById("downloadBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("downloadBtn");
+  btn.disabled = true;
+  btn.textContent = "Preparing download…";
+  try {
+    // Try jsPDF/html2canvas first (works when file is opened locally in browser)
+    if (window.jspdf && window.html2canvas) {
+      const { jsPDF } = window.jspdf;
+      const reportEl = document.getElementById("RS");
+      reportEl.style.maxWidth = "900px"; reportEl.style.margin = "0";
+      const canvas = await html2canvas(reportEl, {
+        scale: 2, useCORS: true, backgroundColor: "#f7f8fc", logging: false, windowWidth: 960
+      });
+      reportEl.style.maxWidth = ""; reportEl.style.margin = "";
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const margin = 8;
+      const usableW = pdf.internal.pageSize.getWidth() - margin * 2;
+      const usableH = pdf.internal.pageSize.getHeight() - margin * 2;
+      const ratio = canvas.width / usableW;
+      const totalH = canvas.height / ratio;
+      let yOffset = 0, page = 0;
+      while (yOffset < totalH) {
+        if (page > 0) pdf.addPage();
+        const srcY = yOffset * ratio;
+        const sliceH = Math.min(usableH * ratio, canvas.height - srcY);
+        const sc = document.createElement("canvas");
+        sc.width = canvas.width; sc.height = sliceH;
+        sc.getContext("2d").drawImage(canvas, 0, srcY, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+        pdf.addImage(sc.toDataURL("image/jpeg", 0.95), "JPEG", margin, margin, usableW, sliceH / ratio);
+        yOffset += usableH; page++;
+      }
+      const name = (document.getElementById("rName").textContent || "report").replace(/[^a-z0-9]/gi,"_").toLowerCase();
+      pdf.save(`capflow_merchant_review_${name}_${new Date().toISOString().slice(0,10)}.pdf`);
+      btn.disabled = false; btn.textContent = "⬇ Download PDF";
+      return;
+    }
+
+    // Fallback: save as self-contained HTML (open in browser → Ctrl+P → Save as PDF)
+    const reportEl = document.getElementById("RS");
+    const styleSheets = Array.from(document.styleSheets).map(ss => {
+      try { return Array.from(ss.cssRules).map(r => r.cssText).join("\n"); } catch(e) { return ""; }
+    }).join("\n");
+    const logoSrc = document.querySelector(".logo-img") ? document.querySelector(".logo-img").src : "";
+    const name = (document.getElementById("rName").textContent || "report").replace(/[^a-z0-9]/gi,"_").toLowerCase();
+    
+    const printHTML = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<title>Capflow Merchant Review</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+${styleSheets}
+body{background:white!important;padding:20px 32px}
+.rfooter,.reeval,.hdr,.stripe,#FS{display:none!important}
+#RS{display:block!important}
+.report-hdr,.cbar,.deal-box,.vb,.mc,.flag,.stat,.obs,.credit-badge{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@media print{@page{margin:10mm;size:A4}body{padding:8px 16px}}
+</style>
+</head><body>
+<div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:3px solid #f47920;margin-bottom:16px;-webkit-print-color-adjust:exact;print-color-adjust:exact">
+  <div style="background:#1a1f5a;padding:7px 14px;border-radius:7px;-webkit-print-color-adjust:exact;print-color-adjust:exact">
+    <img src="${logoSrc}" style="height:26px" alt="Capflow"/>
+  </div>
+  <div style="font-size:10px;font-weight:600;color:#9098b8;text-transform:uppercase;letter-spacing:.8px">Capflow Merchant Review — Confidential</div>
+</div>
+<div id="RS" style="display:block">
+${reportEl.innerHTML}
+</div>
+<div style="margin-top:24px;padding:14px 16px;background:#eef0fb;border-radius:8px;font-size:12px;color:#5a6080;border:1px solid #e2e5f0">
+  <strong style="color:#2d3280">To save as PDF:</strong> Press <strong>Ctrl+P</strong> (Windows) or <strong>Cmd+P</strong> (Mac) → change destination to <strong>Save as PDF</strong> → Save
+</div>
+<script>window.onload=function(){window.print();}<\/script>
+</body></html>`;
+
+    const blob = new Blob([printHTML], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `capflow_merchant_review_${name}_${new Date().toISOString().slice(0,10)}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    btn.textContent = "✓ Downloaded — open file to print as PDF";
+    setTimeout(() => { btn.disabled = false; btn.textContent = "⬇ Download PDF"; }, 4000);
+
+  } catch(err) {
+    console.error(err);
+    btn.disabled = false;
+    btn.textContent = "⬇ Download PDF";
+    alert("Download failed: " + err.message);
+  }
+});
+
+    reportEl.style.maxWidth = "";
+    reportEl.style.margin = "";
+
+    const imgData = canvas.toDataURL("image/jpeg", 0.95);
+    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+
+    const pdfW = pdf.internal.pageSize.getWidth();
+    const pdfH = pdf.internal.pageSize.getHeight();
+    const margin = 8;
+    const usableW = pdfW - margin * 2;
+    const usableH = pdfH - margin * 2;
+
+    const canvasW = canvas.width;
+    const canvasH = canvas.height;
+    const ratio = canvasW / usableW;
+    const totalH = canvasH / ratio;
+
+    let yOffset = 0;
+    let page = 0;
+
+    while (yOffset < totalH) {
+      if (page > 0) pdf.addPage();
+
+      // Crop the canvas slice for this page
+      const srcY = yOffset * ratio;
+      const sliceH = Math.min(usableH * ratio, canvasH - srcY);
+
+      const sliceCanvas = document.createElement("canvas");
+      sliceCanvas.width = canvasW;
+      sliceCanvas.height = sliceH;
+      const ctx = sliceCanvas.getContext("2d");
+      ctx.drawImage(canvas, 0, srcY, canvasW, sliceH, 0, 0, canvasW, sliceH);
+
+      const sliceData = sliceCanvas.toDataURL("image/jpeg", 0.95);
+      const sliceDisplayH = sliceH / ratio;
+      pdf.addImage(sliceData, "JPEG", margin, margin, usableW, sliceDisplayH);
+
+      yOffset += usableH;
+      page++;
+    }
+
+    // Filename from merchant name
+    const merchantName = (document.getElementById("rName").textContent || "merchant").replace(/[^a-z0-9]/gi, "_").toLowerCase();
+    const dateStr = new Date().toISOString().slice(0,10);
+    pdf.save(`capflow_review_${merchantName}_${dateStr}.pdf`);
+
+  } catch(err) {
+    console.error(err);
+    alert("PDF generation failed: " + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "⬇ Download PDF";
+  }
+});
+
+// New review
+document.getElementById("nb").addEventListener("click",()=>{
+  files=[];orig={};renderPills();
+  ["appN","reqA","abn","nts"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("ind").value="";
+  document.getElementById("RS").style.display="none";
+  document.getElementById("FS").style.display="block";
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+</script>
+</body>
+</html>
